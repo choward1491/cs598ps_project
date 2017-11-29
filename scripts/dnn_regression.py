@@ -1,10 +1,12 @@
 import pickle
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torch.autograd import Variable
 from feature_extraction import Weights
+import argparse
 import numpy as np
 import pdb
 
@@ -88,10 +90,17 @@ class DNetwork(nn.Module):
         return y
 
 def main():
-    num_epochs = 10
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='DNN Classification')
+    parser.add_argument('--epochs', '-e', type=int, default=100,
+                        help='Number of epochs')
+    parser.add_argument('--croplength', '-cl', type=int, default=64)
+    parser.add_argument('--batchsize', '-bs', type=int, default=10)
+    args = parser.parse_args()
 
-    dataset = PatientDataset('../data/nmf.pkl', transform = TimeCrop(64))
-    dataloader = DataLoader(dataset, batch_size = 10, shuffle = True)
+    # Get dataset
+    dataset = PatientDataset('../data/nmf.pkl', transform = TimeCrop(args.croplength))
+    dataloader = DataLoader(dataset, batch_size = args.batchsize, shuffle = True)
     print('Length of Dataset: ', len(dataset))
     patient_data = dataset[np.random.randint(0, len(dataset))]
     label = patient_data['label']
@@ -101,16 +110,25 @@ def main():
     loss = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(dnn.parameters())
 
-    for epoch in range(num_epochs):
-        for i, batch in enumerate(dataloader):
+    for epoch in range(args.epochs):
+        total_accuracy = 0
+        total_loss = 0
+        for batch_count, batch in enumerate(dataloader):
             x = Variable(batch['features'].unsqueeze(1))
-            y = Variable(batch['label'].double())
-            yest = dnn(x).squeeze(1)
-            loss_val = loss(yest, y)
+            y = Variable(batch['label']).byte()
+            logits = dnn(x).squeeze(1)
+            loss_val = loss(logits, y.double())
+
             optimizer.zero_grad()
             loss_val.backward()
             optimizer.step()
-        print('Loss: ', loss_val.data.numpy())
+
+            # Compute metrics
+            estimates = logits > 0
+            total_accuracy += torch.mean((estimates == y).double()).data.numpy()[0]
+            total_loss += loss_val.data.numpy()[0]
+        print('Loss: ', total_loss / (batch_count + 1))
+        print('Accuracy: ', total_accuracy / (batch_count + 1))
 
 if __name__ == '__main__':
     main()
