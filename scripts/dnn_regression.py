@@ -8,6 +8,7 @@ from torch.autograd import Variable
 from feature_extraction import Weights
 import argparse
 import numpy as np
+import random
 import pdb
 
 class TimeCrop(object):
@@ -31,26 +32,46 @@ class TimeCrop(object):
         return sample[start : start + self.size]
 
 class PatientDataset(Dataset):
-    def __init__(self, file, transform=None):
+    def __init__(self, file, train_val_split=0.8, transform=None):
         '''
         file : (string) pickle file name
         '''
         f = open(file, 'rb')
-        self.patient_data = pickle.load(f)
+        patient_data = pickle.load(f)
+        random.shuffle(patient_data)
         self.transform = transform
+        num_patients = len(patient_data)
+        sample_end = int(train_val_split * num_patients)
+        self.train = patient_data[:sample_end]
+        self.val = patient_data[sample_end:]
 
     def __len__(self):
-        return len(self.patient_data)
+        return len(self.train)
 
     def __getitem__(self, i):
-        patient = self.patient_data[i]
+        patient = self.train[i]
         label = patient.isControl
         features = patient.weights
 
         if self.transform:
             features = self.transform(features)
 
-        return {'label': label, 'features' : features}
+        return {'label': torch.ByteTensor([int(label)]),
+                'features' : torch.FloatTensor(features)}
+
+    def lenval(self):
+        return len(self.val)
+
+    def getval(self, i):
+        patient = self.val[i]
+        label = patient.isControl
+        features = patient.weights
+
+        if self.transform:
+            features = self.transform(features)
+
+        return {'label': torch.ByteTensor([int(label)]),
+                'features' : torch.FloatTensor(features)}
 
 class DNetwork(nn.Module):
     def __init__(self, activation = F.relu):
@@ -96,39 +117,65 @@ def main():
                         help='Number of epochs')
     parser.add_argument('--croplength', '-cl', type=int, default=64)
     parser.add_argument('--batchsize', '-bs', type=int, default=10)
+    parser.add_argument('--transform', '-t', type=str, default='nmf')
     args = parser.parse_args()
 
+    datafile = '../data/nmf.pkl'
+    if args.transform == 'nmf':
+        datafile = '../data/nmf.pkl'
+    elif args.transform == 'pca':
+        datafile = '../data/pca.pkl'
+    else:
+        raise ValueError('Transform argument not recognized')
+
     # Get dataset
-    dataset = PatientDataset('../data/nmf.pkl', transform = TimeCrop(args.croplength))
+    dataset = PatientDataset(datafile, transform = TimeCrop(args.croplength))
     dataloader = DataLoader(dataset, batch_size = args.batchsize, shuffle = True)
     print('Length of Dataset: ', len(dataset))
     patient_data = dataset[np.random.randint(0, len(dataset))]
     label = patient_data['label']
     features = patient_data['features']
     print('Random Patient Information: {}, {}'.format(label, features.shape))
-    dnn = DNetwork().double()
+    dnn = DNetwork()
     loss = nn.BCEWithLogitsLoss()
-    optimizer = optim.Adam(dnn.parameters())
+    optimizer = optim.Adam(dnn.parameters(), weight_decay = 1e-4)
+
+    depression_prop = 0
+    for data in dataset:
+        depression_prop += data['label'].numpy()[0]
+    depression_prop /= len(dataset)
+    print('Proportion of Depressed: ', depression_prop)
 
     for epoch in range(args.epochs):
         total_accuracy = 0
-        total_loss = 0
+        val_accuracy = 0
+        total_cost = 0
+        dnn.train()
         for batch_count, batch in enumerate(dataloader):
             x = Variable(batch['features'].unsqueeze(1))
-            y = Variable(batch['label']).byte()
-            logits = dnn(x).squeeze(1)
-            loss_val = loss(logits, y.double())
+            y = Variable(batch['label'])
+            logits = dnn(x)
+            cost = loss(logits, y.float())
 
             optimizer.zero_grad()
-            loss_val.backward()
+            cost.backward()
             optimizer.step()
 
             # Compute metrics
             estimates = logits > 0
             total_accuracy += torch.mean((estimates == y).double()).data.numpy()[0]
-            total_loss += loss_val.data.numpy()[0]
-        print('Loss: ', total_loss / (batch_count + 1))
-        print('Accuracy: ', total_accuracy / (batch_count + 1))
+            total_cost += cost.data.numpy()[0]
+
+        dnn.eval()
+        for i in range(dataset.lenval()):
+            x = Variable(dataset.getval(i)['features'].unsqueeze(0).unsqueeze(0))
+            y = Variable(dataset.getval(i)['label'])
+            logits = dnn(x)
+            estimates = logits > 0
+            val_accuracy += (estimates == y).data.numpy()[0]
+
+        print('Train Accuracy: ', total_accuracy / (batch_count + 1))
+        print('Validation Accuracy: ', val_accuracy / (dataset.lenval() + 1))
 
 if __name__ == '__main__':
     main()
