@@ -156,10 +156,10 @@ def main():
 
     # Run and optimize dnn
     train_costs = []
+    val_costs = []
     epochs = []
     for epoch in range(args.epochs):
         total_accuracy = 0
-        val_accuracy = 0
         total_cost = 0
         dnn.train()
         for batch_count, batch in enumerate(dataloader):
@@ -177,28 +177,36 @@ def main():
             total_accuracy += torch.mean((estimates == y).double()).data.numpy()[0]
             total_cost += cost.data.numpy()[0]
 
+        val_accuracy = 0
+        val_cost = 0
         dnn.eval()
         for i in range(dataset.lenval()):
             x = Variable(dataset.getval(i)['features'].unsqueeze(0).unsqueeze(0))
-            y = Variable(dataset.getval(i)['label'])
+            y = Variable(dataset.getval(i)['label']).unsqueeze(0)
             logits = dnn(x)
+            cost = loss(logits, y.float())
+
             estimates = logits > 0
             val_accuracy += (estimates == y).data.numpy()[0][0]
+            val_cost += cost.data.numpy()[0]
 
         print('Train Accuracy: ', total_accuracy / (batch_count + 1))
         print('Validation Accuracy: ', val_accuracy / (dataset.lenval() + 1))
-        train_costs.append(total_cost)
+        train_costs.append(total_cost / (batch_count + 1))
+        val_costs.append(val_cost / (dataset.lenval() + 1))
         epochs.append(epoch)
         traces = [
             dict(x=epochs, y=train_costs, name='Training Loss', line={'width':1},
-            mode='lines', type='scatter')
+            mode='lines', type='scatter'),
+            dict(x=epochs, y=val_costs, name='Validation Loss', line={'width':1},
+            mode='lines', type='scatter'),
         ]
         layout = dict(
             showlegend=True,
             legend=dict( orientation='h', y=1.1, bgcolor='rgba(0,0,0,0)'),
             margin=dict( r=30, b=40, l=50, t=50),
             font=dict( family='Bell Gothic Std'),
-            xaxis=dict( autorange=True, title='Training samples'),
+            xaxis=dict( autorange=True, title='Epochs'),
             yaxis=dict( autorange=True, title='Loss'),
             title='Losses',
         )
