@@ -9,7 +9,13 @@ from feature_extraction import Weights
 import argparse
 import numpy as np
 import random
+import visdom
 import pdb
+
+# Install visdom
+# Make sure to start the server BEFORE running the file
+# Start visdom server by running the following command: python -m visdom.server
+# Use browser to access plots
 
 class TimeCrop(object):
     '''
@@ -74,7 +80,7 @@ class PatientDataset(Dataset):
                 'features' : torch.FloatTensor(features)}
 
 class DNetwork(nn.Module):
-    def __init__(self, activation = F.relu):
+    def __init__(self, input_size = (68, 20), activation = F.relu):
         super(DNetwork, self).__init__()
         # Conv layers with batch norm
         self.activation = activation
@@ -86,7 +92,8 @@ class DNetwork(nn.Module):
         self.mp2 = nn.MaxPool2d(2)
 
         # Fully connected layers with batch norm
-        self.fc1 = nn.Linear(400, 100)
+        fc_size = (5 * input_size[0] * input_size[1]) // 16
+        self.fc1 = nn.Linear(fc_size, 100)
         self.fc_bn1 = nn.BatchNorm1d(100)
         self.fc2 = nn.Linear(100, 1)
 
@@ -115,11 +122,12 @@ def main():
     parser = argparse.ArgumentParser(description='DNN Classification')
     parser.add_argument('--epochs', '-e', type=int, default=100,
                         help='Number of epochs')
-    parser.add_argument('--croplength', '-cl', type=int, default=64)
+    parser.add_argument('--croplength', '-cl', type=int, default=68)
     parser.add_argument('--batchsize', '-bs', type=int, default=10)
     parser.add_argument('--transform', '-t', type=str, default='nmf')
     args = parser.parse_args()
 
+    vis = visdom.Visdom(port=8097)
     datafile = '../data/nmf.pkl'
     if args.transform == 'nmf':
         datafile = '../data/nmf.pkl'
@@ -136,7 +144,7 @@ def main():
     label = patient_data['label']
     features = patient_data['features']
     print('Random Patient Information: {}, {}'.format(label, features.shape))
-    dnn = DNetwork()
+    dnn = DNetwork(input_size = (features.shape[0], features.shape[1]))
     loss = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(dnn.parameters(), weight_decay = 1e-4)
 
@@ -146,6 +154,9 @@ def main():
     depression_prop /= len(dataset)
     print('Proportion of Depressed: ', depression_prop)
 
+    # Run and optimize dnn
+    train_costs = []
+    epochs = []
     for epoch in range(args.epochs):
         total_accuracy = 0
         val_accuracy = 0
@@ -172,10 +183,27 @@ def main():
             y = Variable(dataset.getval(i)['label'])
             logits = dnn(x)
             estimates = logits > 0
-            val_accuracy += (estimates == y).data.numpy()[0]
+            val_accuracy += (estimates == y).data.numpy()[0][0]
 
         print('Train Accuracy: ', total_accuracy / (batch_count + 1))
         print('Validation Accuracy: ', val_accuracy / (dataset.lenval() + 1))
+        train_costs.append(total_cost)
+        epochs.append(epoch)
+        traces = [
+            dict(x=epochs, y=train_costs, name='Training Loss', line={'width':1},
+            mode='lines', type='scatter')
+        ]
+        layout = dict(
+            showlegend=True,
+            legend=dict( orientation='h', y=1.1, bgcolor='rgba(0,0,0,0)'),
+            margin=dict( r=30, b=40, l=50, t=50),
+            font=dict( family='Bell Gothic Std'),
+            xaxis=dict( autorange=True, title='Training samples'),
+            yaxis=dict( autorange=True, title='Loss'),
+            title='Losses',
+        )
+        vis._send( dict( data=traces, layout=layout, win='loss'))
+    vis.close()
 
 if __name__ == '__main__':
     main()
