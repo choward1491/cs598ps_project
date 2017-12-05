@@ -42,6 +42,8 @@ def separateClassData( X, Y, numdata_or_percent_for_training ):
         else:
             nltr    = numdata_or_percent_for_training
 
+        np.random.seed(17)
+        np.random.shuffle(idxv)
         (idx1, idx2)= np.split(idxv,[nltr])
 
         Train[label]= X[:,idx1]

@@ -37,11 +37,16 @@ def plotImageFeatures(F, img_dims, out_grid_layout):
     # return the output image of features
     return out_img
 
-def plotDataset(fig,D, delta = (0,0)):
+def plotDataset(fig,D, delta = (0,0), doFlip = True):
     ax = fig.add_subplot(111)
-    im = ax.imshow(np.flip(D,axis=0), interpolation='nearest', cmap=plot.cm.inferno,
-                   extent=(0.5 + delta[1], np.shape(D)[1] + delta[1] + 0.5,
-                           0.5 + delta[0], np.shape(D)[0] + delta[0] + 0.5))
+    if doFlip:
+        im = ax.imshow(np.flip(D,axis=0), interpolation='nearest', cmap=plot.cm.inferno,
+                       extent=(0.5 + delta[1], np.shape(D)[1] + delta[1] + 0.5,
+                               0.5 + delta[0], np.shape(D)[0] + delta[0] + 0.5))
+    else:
+        im = ax.imshow(D, interpolation='nearest', cmap=plot.cm.inferno,
+                       extent=(0.5 + delta[1], np.shape(D)[1] + delta[1] + 0.5,
+                               0.5 + delta[0], np.shape(D)[0] + delta[0] + 0.5))
     ax.set_aspect('auto')
     ax.set_xlabel('Number of Data Points')
     ax.set_ylabel('Number of Feature Dimensions')

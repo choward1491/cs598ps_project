@@ -2,6 +2,48 @@ import numpy as np
 import math
 import myml.factorizations as myfac
 
+def computeConfusionMatrix( Xtest, Ltest, Leval, classes ):
+
+    # init useful vars
+    Nc  = classes.shape[0]
+    C   = np.zeros((Nc,Nc))
+
+    # compute the confusion matrix
+    for ir in range(0,Nc):
+        ridx = np.where(Ltest==classes[ir])[1]
+        nr = ridx.shape[0]
+        for ic in range(0,Nc):
+            cidx = np.where(Leval[ridx] == classes[ic])[0]
+            nc = cidx.shape[0]
+            C[ir,ic] = (100.0*nc)/(nr)
+
+    # compute the accuracy
+    dL = Ltest - Leval
+    N = dL.shape[1]
+    bidx = np.where(dL == 0)[1]
+    accuracy = (100.0 * bidx.shape[0]) / N
+
+    # return confusion matrix and accuracy
+    return (C,accuracy)
+
+def constructDistriminantSet(X, L, Fpinv = None,):
+
+    # get shape of data and find unique labels
+    (d,nd) = X.shape
+    u = np.unique(L)
+    Nu = u.shape[0]
+    set = dict()
+
+    # construct set of discriminant functions based on the dataset,
+    # the smoothing constant, and the possible values a feature can take
+    for n in range(0,Nu):
+        idx = np.where(L == u[n])[1]
+        Xt = X[:,idx[:]]
+        set[u[n]] = Discriminant(Xt,nd, Fpinv=Fpinv)
+
+    # return set of discriminant functions
+    return set
+
 def getGaussianDiscriminantParams(mean, covariance,ProbOmega):
     # Author: Christian Howard
     # Function to get Gaussian discriminant function parameters given
@@ -31,7 +73,7 @@ def evalGuassianPDF(x, mean, cov, inv_cov):
     delta = x - mean
     return np.sqrt(np.linalg.det((2.0*math.pi)*cov))*np.exp( -0.5*(delta.T.dot(inv_cov)*delta.T).sum(axis=1) )
 
-def evalDiscriminantSet(X, discriminant_list):
+def evalDiscriminantSet(X, discriminant_list, classes = None):
     # Author: Christian Howard
     # Function to compute the classification given some input X
     # and a list of discriminant functions that could label the
@@ -48,8 +90,12 @@ def evalDiscriminantSet(X, discriminant_list):
 
     # loop discriminant functions and figure out
     # the classification for each data point in X
-    for i in range(0, nlbl):
-        results[i, :] = discriminant_list[i].eval(X)
+    if classes is None:
+        for i in range(0, nlbl):
+            results[i, :] = discriminant_list[i].eval(X)
+    else:
+        for i in range(0, nlbl):
+            results[i, :] = discriminant_list[classes[i]].eval(X)
 
     # for each data point, find the index of the discriminant
     # that says the data is best represented by its distribution
@@ -57,7 +103,10 @@ def evalDiscriminantSet(X, discriminant_list):
 
     # return the max_idx which represents
     # the classification for each data point in X
-    return max_idx
+    if classes is None:
+        return max_idx
+    else:
+        return classes[max_idx]
 
 
 class Discriminant:
@@ -72,10 +121,13 @@ class Discriminant:
         self.Ws         = []
         self.cost_diff  = 1.0
 
-    def __init__(self, lbl_dataset, num_total_data, Fpinv, cost_diff=1.0):
+    def __init__(self, lbl_dataset, num_total_data, Fpinv = None, cost_diff=1.0):
         self.Fpinv = Fpinv
         (d,nd)  = lbl_dataset.shape
-        ldataset= Fpinv@lbl_dataset
+        if Fpinv == None:
+            ldataset = lbl_dataset
+        else:
+            ldataset= Fpinv@lbl_dataset
         mean    = myfac.getMeanData(ldataset)
         Wsigma  = ldataset - mean
         cov     = (Wsigma@Wsigma.T)/(nd-1.0)
@@ -87,5 +139,8 @@ class Discriminant:
         self.cost_diff = cost_diff
 
     def eval(self,x):
-        w = self.Fpinv@x
+        if self.Fpinv == None:
+            w = x
+        else:
+            w = self.Fpinv@x
         return np.log(self.cost_diff) + evalGaussianDiscriminant(w,(self.Wm, self.Wv, self.Ws))

@@ -22,7 +22,7 @@ def main():
     mat= np.zeros(shape=(0, 16*16*10))
     weightsArr=[]
     arr = []
-    f = open('C:\\Users\\schan\\Documents\\LargeFiles\\coarse.pkl', 'rb')
+    f = open('../data/coarse.pkl', 'rb')
     while True:
         try:
             scan = pickle.load(f)
@@ -36,10 +36,10 @@ def main():
             print(len(arr))
 
     print(mat.shape)
-    np.save("C:\\Users\\schan\\Documents\\LargeFiles\\mat.npy", mat)
+    np.save("../data/mat.npy", mat)
 
-    doPCA=False
-    doNMF=True
+    doPCA=True
+    doNMF=False
     if doPCA:
         pca = PCA(n_components=700, whiten=True)
         pca.fit(mat)
@@ -51,7 +51,7 @@ def main():
             curr+=x
             weightsArr[i].setWeights(weights)
 
-        f = open('C:\\Users\\schan\\Documents\\LargeFiles\\pca.pkl', 'wb')
+        f = open('../data/pca.pkl', 'wb')
         pickle.dump(weightsArr,f,pickle.HIGHEST_PROTOCOL)
         pickle.dump(pca.components_, f, pickle.HIGHEST_PROTOCOL)
     if doNMF:
@@ -65,9 +65,15 @@ def main():
             curr+=x
             weightsArr[i].setWeights(weights)
 
-        f = open('C:\\Users\\schan\\Documents\\LargeFiles\\nmf.pkl', 'wb')
+        f = open('../data/nmf.pkl', 'wb')
         pickle.dump(weightsArr,f,pickle.HIGHEST_PROTOCOL)
         pickle.dump(nmf.components_, f, pickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
+    class Scan():
+        def __init__(self, isControl, personId, runNo, data):
+            self.isControl = isControl
+            self.personId = personId
+            self.runNo = runNo
+            self.data = data
     main()
