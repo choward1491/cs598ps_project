@@ -78,6 +78,29 @@ class PatientDataset(Dataset):
 
         return {'label': torch.ByteTensor([int(label)]),
                 'features' : torch.FloatTensor(features)}
+    
+    def _reshapeFeatures_(self, data):
+        p=np.ndarray.flatten(self.transform(data[0].weights)).shape[0]
+        n=len(data)
+        features = np.zeros((n,p))
+        for i in range(n):
+            features[i,:]=np.ndarray.flatten(self.transform(data[i].weights))
+        return features
+    def getTrainFeatures(self):
+        return self._reshapeFeatures_(self.train)
+    def getValFeatures(self):
+        return self._reshapeFeatures_(self.val)
+    
+    def _getLabels_(self,data):
+        n = len(data)
+        labels=np.zeros(n)
+        for i, d in enumerate(data):
+            labels[i] = d.isControl
+        return labels
+    def getTrainLabels(self):
+        return(self._getLabels_(self.train))
+    def getValLabels(self):
+        return(self._getLabels_(self.val))
 
 class DNetwork(nn.Module):
     def __init__(self, input_size = (68, 20), activation = F.relu):
