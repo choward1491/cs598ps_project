@@ -46,8 +46,17 @@ def lda_model_accuracy(Xraw, L, num_features, percent_train=0.5):
 if __name__ == '__main__':
 
     # load the raw inputs and labels
-    Xraw = np.load('../data/raw_features.npy').T
+    Xraw0 = np.load('../data/raw_features.npy').T
     L = np.load('../data/control_lbls.npy')
+
+    # get mean of input data and subtract it
+    doWhiten = False
+    if doWhiten:
+        (d, nd) = Xraw0.shape
+        Xmean = np.mean(Xraw0, axis=1).reshape(d, 1)
+        Xraw = Xraw0 - Xmean
+    else:
+        Xraw = Xraw0
 
     # loop through different number of feature representations
     # to see what the overall classification accuracy is for each
