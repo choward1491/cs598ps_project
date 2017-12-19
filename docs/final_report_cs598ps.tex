@@ -93,6 +93,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    \section{Problem Solution}
    \subsection{Unsupervised Learning}
+   \subsubsection{Dimensionality Reduction}
    \subsection{Supervised Learning}
    \subsubsection{Gaussian Discriminant Analysis}
    As a fairly straight forward model for classification, Gaussian discriminant functions with full covariance estimates were used. The idea is to perform a Maximum a Posteriori (MAP) estimate of which class $\omega^*$, out of a set of classes $\lbrace \omega_k \rbrace$, is best representative given some input $x$. This can be expressed as:
@@ -115,13 +116,14 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    \subsubsection{Random Forests}
    \subsubsection{Deep Neural Networks}
-   
+   Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in \textbf{figure 2}.  It was suggested by Sarraf and Tofighi \textbf{CITE!!!!!} that LeNet-5, a network first designed by LeCunn et Al. \textbf{CITE!!!!!} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86% accuracy on tasks such as Alzheimer classifcation. In practice, we did make changes to LeNet-5 including the inclusion of batch normalization layers to help the network converge faster, and combining the two 2x2 subsamplng layers into one 4x4 max pooling layer because it gave the network better accuracy on the validation data for our depression classification task. Overall, our network is fairly similiar to LeNet-5 with the inclusion of two convolutional layers, for instances of ReLU hiddden activation functions, and lastly two fully-connected layers. The loss function that was chosen was the sigmoid loss, which is fairly standard for binary classification tasks.  
    \begin{figure}[!htb]
    	\centering
    	\includegraphics[width=4in]{DNN_diagram_annotated.pdf}
    	\caption{Deep Neural Network Configuration}
    	\label{fig:dnnConfig}
    \end{figure}
+   
    
    \subsection{Numerical Results}
    After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as Figure 4 shows, their success for a given number of features was dependent on the modeling approach. 
