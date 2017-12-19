@@ -6,7 +6,7 @@
 \contentsline {subsection}{\numberline {2.1}Unsupervised Learning}{4}{subsection.2.1}
 \contentsline {subsection}{\numberline {2.2}Supervised Learning}{4}{subsection.2.2}
 \contentsline {subsubsection}{\numberline {2.2.1}Gaussian Discriminant Analysis}{4}{subsubsection.2.2.1}
-\contentsline {subsubsection}{\numberline {2.2.2}Random Forests}{5}{subsubsection.2.2.2}
-\contentsline {subsubsection}{\numberline {2.2.3}Deep Neural Networks}{5}{subsubsection.2.2.3}
+\contentsline {subsubsection}{\numberline {2.2.2}Random Forests}{4}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.2.3}Deep Neural Networks}{4}{subsubsection.2.2.3}
 \contentsline {subsection}{\numberline {2.3}Numerical Results}{5}{subsection.2.3}
 \contentsline {section}{Appendices}{7}{section*.5}
