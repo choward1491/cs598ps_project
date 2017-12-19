@@ -93,7 +93,8 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    \section{Problem Solution}
    \subsection{Unsupervised Learning}
-   \subsubsection{Dimensionality Reduction}
+   The objective of our unsupervised learning tasks was to spatially reduce the dimensions of the fMRI dataset. The coarsened fMRI dataset consists of $180$ measurement sessions each session containing a time series of $3$-dimensional points clouds where each point cloud consists of $16$ by $16$ by $10$ spatial dimensions corresponding to the blood oxygen activation at the measured coordinate in the brain.  For every measurement session, we had $435200$ measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
+   The two methods we used to reduce the dimensions were PCA and NMF. NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. 
    \subsection{Supervised Learning}
    \subsubsection{Gaussian Discriminant Analysis}
    As a fairly straight forward model for classification, Gaussian discriminant functions with full covariance estimates were used. The idea is to perform a Maximum a Posteriori (MAP) estimate of which class $\omega^*$, out of a set of classes $\lbrace \omega_k \rbrace$, is best representative given some input $x$. This can be expressed as:
@@ -126,7 +127,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    
    \subsection{Numerical Results}
-   After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as Figure 4 shows, their success for a given number of features was dependent on the modeling approach. 
+   After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as \textbf{Figure 4} shows, their success for a given number of features was dependent on the modeling approach. 
    
    Random Forests proved to not only perform well for the provided NMF features, but was very fast to compute. GDA performed well using PCA feature as the number of PCA features increased and was also very efficient to compute. Now while the Deep Neural Network required more computational complexity to train, it showed great performance as well. As can be seen in Figure 4, GDA required the most number of features to achieve greater than 90\% classification performance while the Random Forests and Deep Neural Network needed only 5 or more features to achieve high accuracy.
    
