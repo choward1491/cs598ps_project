@@ -89,7 +89,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    \end{figure}
    
    \subsection{Problem Being Investigated}
-   
+   The problem of diagnosis using fMRI data is challenging, but can potentially be rewarding.  Because diagnosis of mental illness has historically been done by observing behaviors, it is possible that using data-driven techniques can uncover ideas from the brain.  Previous studies in this area worked on diagnosing Parkinson's disease using Support Vector Machines \cite{salvatore2014machine}, and classifying drug addiction using Boosting \cite{zhang2005diagnosis}.
    
    \section{Problem Solution}
    \subsection{Unsupervised Learning}
@@ -112,6 +112,8 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    
    \subsubsection{Random Forests}
+   Random forests build an ensemble of decision trees on a dataset, which take a majority vote to classify a new data point. The trees are built as follows.  First, take $n$ samples with replacement form the original dataset, which has size $n$ and dimension $p$.  Then, train a decision tree on the samples, where the feature split at each node is chosen from a subset of the remaining features (typically a random sample of size $\sqrt{p}$) to maximize information gain.  The bagging and randomized feature splitting keep the trees from being correlated, so a random forest theoretically will overfit less than a decision tree.
+   
    \subsubsection{Deep Neural Networks}
    Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in Figure \ref{fig:dnnConfig}.  It was suggested by Sarraf and Tofighi \textbf{CITE!!!!!} that LeNet-5, a network first designed by LeCunn et Al. \textbf{CITE!!!!!} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86\% accuracy on tasks such as Alzheimer classification. In practice, we did make changes to LeNet-5 including the inclusion of batch normalization layers to help the network converge faster, and combining the two 2x2 subsamplng layers into one 4x4 max pooling layer because it gave the network better accuracy on the validation data for our depression classification task. Overall, our network is fairly similiar to LeNet-5 with the inclusion of two convolutional layers, for instances of ReLU hidden activation functions, and lastly two fully-connected layers. The loss function that was chosen was the sigmoid loss, which is fairly standard for binary classification tasks.  
    
@@ -139,6 +141,12 @@ Sameer Manchanda \\ manchan2@illinois.edu
    	Henrik V. Sorensen, C. Sidney Burrus.
    	\textit{Efficient Computation of the DFT with Only a Subset of Input or Output Points}.
    	IEEE Transactions on Signal Processing, Volume: 41, Issue: 3, pgs. 1184 - 1200, Mar 1993.
+   	
+   	\bibitem{salvatore2014machine}
+   	Salvatore, Christian, et al. ``Machine learning on brain MRI data for differential diagnosis of Parkinson's disease and Progressive Supranuclear Palsy." \textit{Journal of Neuroscience Methods} 222 (2014): 230-237.
+   	
+   	\bibitem{zhang2005diagnosis}
+   	Zhang, Lei, et al. ``Machine learning for clinical diagnosis from functional magnetic resonance imaging." \textit{Computer Vision and Pattern Recognition}, 2005. CVPR 2005. IEEE Computer Society Conference on. Vol. 1. IEEE, 2005.
    \end{thebibliography}
    
    
