@@ -11,6 +11,7 @@ import numpy as np
 import random
 import visdom
 import pdb
+import matplotlib.pyplot as plt
 
 # Install visdom
 # Make sure to start the server BEFORE running the file
@@ -38,7 +39,7 @@ class TimeCrop(object):
         return sample[start : start + self.size]
 
 class PatientDataset(Dataset):
-    def __init__(self, file, train_val_split=0.8, transform=None):
+    def __init__(self, file, train_val_split=0.8, transform=None, minsize=None):
         '''
         file : (string) pickle file name
         '''
@@ -50,6 +51,10 @@ class PatientDataset(Dataset):
         sample_end = int(train_val_split * num_patients)
         self.train = patient_data[:sample_end]
         self.val = patient_data[sample_end:]
+        if minsize is not None:
+            self.train = [data for data in self.train if data.weights.shape[0] > minsize]
+            self.val = [data for data in self.val if data.weights.shape[0] > minsize]
+        self.minsize = minsize
 
     def __len__(self):
         return len(self.train)
@@ -78,7 +83,7 @@ class PatientDataset(Dataset):
 
         return {'label': torch.ByteTensor([int(label)]),
                 'features' : torch.FloatTensor(features)}
-    
+
     def _reshapeFeatures_(self, data):
         p=np.ndarray.flatten(self.transform(data[0].weights)).shape[0]
         n=len(data)
@@ -86,19 +91,23 @@ class PatientDataset(Dataset):
         for i in range(n):
             features[i,:]=np.ndarray.flatten(self.transform(data[i].weights))
         return features
+
     def getTrainFeatures(self):
         return self._reshapeFeatures_(self.train)
+
     def getValFeatures(self):
         return self._reshapeFeatures_(self.val)
-    
+
     def _getLabels_(self,data):
         n = len(data)
         labels=np.zeros(n)
         for i, d in enumerate(data):
             labels[i] = d.isControl
         return labels
+
     def getTrainLabels(self):
         return(self._getLabels_(self.train))
+
     def getValLabels(self):
         return(self._getLabels_(self.val))
 
@@ -111,11 +120,11 @@ class DNetwork(nn.Module):
         self.conv_bn1 = nn.BatchNorm2d(5)
         self.conv2 = nn.Conv2d(5, 5, 7, stride = 1, padding = 3)
         self.conv_bn2 = nn.BatchNorm2d(5)
-        self.mp1 = nn.MaxPool2d(2)
-        self.mp2 = nn.MaxPool2d(2)
+        # self.mp1 = nn.MaxPool2d(2)
+        # self.mp2 = nn.MaxPool2d(2)
 
         # Fully connected layers with batch norm
-        fc_size = (5 * input_size[0] * input_size[1]) // 16
+        fc_size = (5 * input_size[0] * input_size[1])
         self.fc1 = nn.Linear(fc_size, 100)
         self.fc_bn1 = nn.BatchNorm1d(100)
         self.fc2 = nn.Linear(100, 1)
@@ -130,8 +139,8 @@ class DNetwork(nn.Module):
         h = self.conv_bn1(h)
         h = self.activation(self.conv2(h))
         h = self.conv_bn2(h)
-        h = self.mp1(h)
-        h = self.mp2(h)
+        # h = self.mp1(h)
+        # h = self.mp2(h)
 
         # Fully connected layers
         h = h.view(batch_size, -1)
@@ -141,11 +150,12 @@ class DNetwork(nn.Module):
         return y
 
 def main():
+
     # Parse arguments
     parser = argparse.ArgumentParser(description='DNN Classification')
     parser.add_argument('--epochs', '-e', type=int, default=100,
                         help='Number of epochs')
-    parser.add_argument('--croplength', '-cl', type=int, default=68)
+    parser.add_argument('--croplength', '-cl', type=int, default=100)
     parser.add_argument('--batchsize', '-bs', type=int, default=10)
     parser.add_argument('--transform', '-t', type=str, default='nmf')
     args = parser.parse_args()
@@ -160,80 +170,66 @@ def main():
         raise ValueError('Transform argument not recognized')
 
     # Get dataset
-    dataset = PatientDataset(datafile, transform = TimeCrop(args.croplength))
+    dataset = PatientDataset(datafile, transform = TimeCrop(args.croplength), minsize=100)
     dataloader = DataLoader(dataset, batch_size = args.batchsize, shuffle = True)
-    print('Length of Dataset: ', len(dataset))
     patient_data = dataset[np.random.randint(0, len(dataset))]
     label = patient_data['label']
     features = patient_data['features']
     print('Random Patient Information: {}, {}'.format(label, features.shape))
-    dnn = DNetwork(input_size = (features.shape[0], features.shape[1]))
-    loss = nn.BCEWithLogitsLoss()
-    optimizer = optim.Adam(dnn.parameters(), weight_decay = 1e-4)
-
-    depression_prop = 0
-    for data in dataset:
-        depression_prop += data['label'].numpy()[0]
-    depression_prop /= len(dataset)
-    print('Proportion of Depressed: ', depression_prop)
 
     # Run and optimize dnn
     train_costs = []
     val_costs = []
     epochs = []
-    for epoch in range(args.epochs):
-        total_accuracy = 0
-        total_cost = 0
-        dnn.train()
-        for batch_count, batch in enumerate(dataloader):
-            x = Variable(batch['features'].unsqueeze(1))
-            y = Variable(batch['label'])
-            logits = dnn(x)
-            cost = loss(logits, y.float())
+    val_accuracies = []
+    for num_features in range(1, 21, 1):
+        dnn = DNetwork(input_size = (features.shape[0], num_features))
+        optimizer = optim.Adam(dnn.parameters(), weight_decay = 1e-4)
+        loss = nn.BCEWithLogitsLoss()
+        for epoch in range(args.epochs):
+            total_accuracy = 0
+            total_cost = 0
+            dnn.train()
+            for batch_count, batch in enumerate(dataloader):
+                x = Variable(batch['features'][:, :, :num_features].unsqueeze(1))
+                print(x.size())
+                y = Variable(batch['label'])
+                logits = dnn(x)
+                cost = loss(logits, y.float())
 
-            optimizer.zero_grad()
-            cost.backward()
-            optimizer.step()
+                optimizer.zero_grad()
+                cost.backward()
+                optimizer.step()
 
-            # Compute metrics
-            estimates = logits > 0
-            total_accuracy += torch.mean((estimates == y).double()).data.numpy()[0]
-            total_cost += cost.data.numpy()[0]
+                # Compute metrics
+                estimates = logits > 0
+                total_accuracy += torch.mean((estimates == y).double()).data.numpy()[0]
+                total_cost += cost.data.numpy()[0]
 
-        val_accuracy = 0
-        val_cost = 0
-        dnn.eval()
-        for i in range(dataset.lenval()):
-            x = Variable(dataset.getval(i)['features'].unsqueeze(0).unsqueeze(0))
-            y = Variable(dataset.getval(i)['label']).unsqueeze(0)
-            logits = dnn(x)
-            cost = loss(logits, y.float())
+            val_accuracy = 0
+            val_cost = 0
+            dnn.eval()
+            for i in range(dataset.lenval()):
+                x = Variable(dataset.getval(i)['features'][:, :num_features].unsqueeze(0).unsqueeze(0))
+                y = Variable(dataset.getval(i)['label'].unsqueeze(0))
+                logits = dnn(x)
+                cost = loss(logits, y.float())
 
-            estimates = logits > 0
-            val_accuracy += (estimates == y).data.numpy()[0][0]
-            val_cost += cost.data.numpy()[0]
+                estimates = logits > 0
+                val_accuracy += (estimates == y).data.numpy()[0][0]
+                val_cost += cost.data.numpy()[0]
 
-        print('Train Accuracy: ', total_accuracy / (batch_count + 1))
-        print('Validation Accuracy: ', val_accuracy / (dataset.lenval() + 1))
-        train_costs.append(total_cost / (batch_count + 1))
-        val_costs.append(val_cost / (dataset.lenval() + 1))
-        epochs.append(epoch)
-        traces = [
-            dict(x=epochs, y=train_costs, name='Training Loss', line={'width':1},
-            mode='lines', type='scatter'),
-            dict(x=epochs, y=val_costs, name='Validation Loss', line={'width':1},
-            mode='lines', type='scatter'),
-        ]
-        layout = dict(
-            showlegend=True,
-            legend=dict( orientation='h', y=1.1, bgcolor='rgba(0,0,0,0)'),
-            margin=dict( r=30, b=40, l=50, t=50),
-            font=dict( family='Bell Gothic Std'),
-            xaxis=dict( autorange=True, title='Epochs'),
-            yaxis=dict( autorange=True, title='Loss'),
-            title='Losses',
-        )
-        vis._send( dict( data=traces, layout=layout, win='loss'))
+        val_accuracies.append(val_accuracy / (dataset.lenval() + 1))
+    plt.plot(val_accuracies)
+    plt.xlabel('Number of Features')
+    plt.ylabel('Testing Accuracies')
+    plt.show()
+
+            # print('Train Accuracy: ', total_accuracy / (batch_count + 1))
+            # print('Validation Accuracy: ', val_accuracy / (dataset.lenval() + 1))
+            # train_costs.append(total_cost / (batch_count + 1))
+            # val_costs.append(val_cost / (dataset.lenval() + 1))
+            # epochs.append(epoch)
     vis.close()
 
 if __name__ == '__main__':
