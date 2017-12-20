@@ -65,7 +65,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    % create the title page 
    \maketitle
    \begin{abstract}
-   A set of classifiers were built that could be used to predict if an individual has Major Depression given fMRI data about them performing a set of tasks. To accomplish this task, a dense fMRI dataset was coarsened via a local voxel averaging scheme and then features were discovered using Principal Component Analysis (PCA) and Non-negative Matrix Factorization (NMF). Using the new feature representations, classifiers were constructed using the following approaches: Random Forests, Gaussian Discriminant Analysis (GDA), and a Deep Neural Network (DNN). All of the above classification methods had high testing accuracy. This high accuracy was interesting and appears to stem from the feature representation causing the reduced data to be very separable with respect to their classes.
+   A set of classifiers were built that could be used to predict if an individual has Major Depression given fMRI data about them performing a set of tasks. To accomplish this task, a dense fMRI dataset was coarsened via a local voxel averaging scheme and then features were discovered using Principal Component Analysis (PCA) and Non-negative Matrix Factorization (NMF). Using the new feature representations, classifiers were constructed using the following approaches: Random Forests (RFs), Gaussian Discriminant Analysis (GDA), and a Deep Neural Network (DNN). All of the above classification methods had high testing accuracy. This high accuracy was interesting and appears to stem from the feature representation causing the reduced data to be very separable with respect to their classes.
    \end{abstract}
    \newpage
    
@@ -95,7 +95,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    \subsection{Unsupervised Learning}
    The objective of our unsupervised learning tasks was to spatially reduce the dimensions of the fMRI dataset. An initial coarsening of the data was performed using averaging across local voxels of data. The resulting coarsened fMRI dataset consisted of $180$ measurement sessions each session containing a time series of $3$-dimensional points clouds where each point cloud consists of $16$ by $16$ by $10$ spatial dimensions corresponding to the blood oxygen activation at the measured coordinate in the brain.  
    
-   For every measurement session, we had $435200$ measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
+   For every measurement session, we had 435,200 measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
    
    The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. 
    
@@ -117,7 +117,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    
    \subsubsection{Random Forests}
-   Random forests build an ensemble of decision trees on a dataset, which take a majority vote to classify a new data point. The trees are built as follows.  First, take $n$ samples with replacement form the original dataset, which has size $n$ and dimension $p$.  Then, train a decision tree on the samples, where the feature split at each node is chosen from a subset of the remaining features (typically a random sample of size $\sqrt{p}$) to maximize information gain.  The bagging and randomized feature splitting keep the trees from being correlated, so a random forest theoretically will overfit less than a decision tree.
+   Random Forests build an ensemble of decision trees on a dataset, which take a majority vote to classify a new data point. The trees are built as follows.  First, take $n$ samples with replacement form the original dataset, which has size $n$ and dimension $p$.  Then, train a decision tree on the samples, where the feature split at each node is chosen from a subset of the remaining features (typically a random sample of size $\sqrt{p}$) to maximize information gain.  The bagging and randomized feature splitting keep the trees from being correlated, so a random forest theoretically will overfit less than a decision tree.
    
    \subsubsection{Deep Neural Networks}
    Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in Figure \ref{fig:dnnConfig}.  It was suggested by Sarraf and Tofighi \textbf{CITE!!!!!} that LeNet-5, a network first designed by LeCunn et Al. \textbf{CITE!!!!!} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86\% accuracy on tasks such as Alzheimer classification. 
@@ -133,9 +133,16 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    
    \subsection{Numerical Results}
-   After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as \textbf{Figure 4} shows, their success for a given number of features was dependent on the modeling approach. 
+   After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as Figure \ref{fig:accuracyResults} shows, their success for a given number of features was dependent on the modeling approach. 
    
-   Random Forests proved to not only perform well for the provided NMF features, but was very fast to compute. GDA performed well using PCA feature as the number of PCA features increased and was also very efficient to compute. Now while the Deep Neural Network required more computational complexity to train, it showed great performance as well. As can be seen in Figure 4, GDA required the most number of features to achieve greater than 90\% classification performance while the Random Forests and Deep Neural Network needed only 5 or more features to achieve high accuracy.
+   RF proved to not only perform well for both PCA and NMF features, but the rate of improvement with respect to the number of features was large and the models were fast to compute. GDA performed well using both PCA and NMF features as well but showed a slower rate of improvement than RFs. While the DNN required more computational complexity to train, it showed rapid improvement rates and good testing performance. Interestingly, however, the DNN converges to a classification test accuracy that is actually less than the RF and GDA models for when we use 14+ features. As can be seen in Figure \ref{fig:accuracyResults}, GDA required the most number of features to achieve greater than 90\% classification performance while the RFs and DNN needed only 4 or more features to achieve greater than 90\% accuracy.
+   
+    \begin{figure}[!htb]
+   	\centering
+   	\includegraphics[width=4in]{../plots/fdim_vs_accuracy_all.png}
+   	\caption{Accuracy results}
+   	\label{fig:accuracyResults}
+   \end{figure}
    
    \newpage
    \begin{thebibliography}{9}
