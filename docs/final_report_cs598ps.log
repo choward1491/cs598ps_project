@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  21 DEC 2017 17:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  21 DEC 2017 17:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -538,7 +538,7 @@ Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
 
-<brain_slices.png, id=77, 467.7475pt x 382.42876pt>
+<brain_slices.png, id=78, 467.7475pt x 382.42876pt>
 File: brain_slices.png Graphic file (type png)
  <use brain_slices.png>
 Package pdftex.def Info: brain_slices.png used on input line 86.
@@ -548,14 +548,14 @@ Package pdftex.def Info: brain_slices.png used on input line 86.
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./DNN_diagram_annotated.pdf)
 : PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<DNN_diagram_annotated.pdf, id=100, 873.56563pt x 343.61777pt>
+<DNN_diagram_annotated.pdf, id=102, 873.56563pt x 343.61777pt>
 File: DNN_diagram_annotated.pdf Graphic file (type pdf)
 
 <use DNN_diagram_annotated.pdf>
 Package pdftex.def Info: DNN_diagram_annotated.pdf used on input line 129.
 (pdftex.def)             Requested size: 289.07999pt x 113.70879pt.
  [5]
-<../plots/fdim_vs_accuracy_all.png, id=113, 462.528pt x 346.896pt>
+<../plots/fdim_vs_accuracy_all.png, id=115, 462.528pt x 346.896pt>
 File: ../plots/fdim_vs_accuracy_all.png Graphic file (type png)
 
 <use ../plots/fdim_vs_accuracy_all.png>
@@ -572,23 +572,23 @@ Missing character: There is no “ in font cmr10!
 \tf@thm=\write6
 \openout6 = `final_report_cs598ps.thm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 170.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 174.
 
 [7 <../plots/fdim_vs_accuracy_all.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 170.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 174.
  (./final_report_cs598ps.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 170.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 170.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 174.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 174.
 Package rerunfilecheck Info: File `final_report_cs598ps.out' has not changed.
 (rerunfilecheck)             Checksum: EC291E3B7AECBF997D453E49D0E22521;761.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 170.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 174.
  ) 
 Here is how much of TeX's memory you used:
- 10424 strings out of 493089
- 155511 string characters out of 6134842
- 279301 words of memory out of 5000000
- 13753 multiletter control sequences out of 15000+600000
- 12456 words of font info for 48 fonts, out of 8000000 for 9000
+ 10428 strings out of 493089
+ 155553 string characters out of 6134842
+ 279359 words of memory out of 5000000
+ 13755 multiletter control sequences out of 15000+600000
+ 12624 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,9n,38p,863b,338s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
@@ -605,11 +605,12 @@ xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texli
 ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/
 2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2
 015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/201
-5/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on final_report_cs598ps.pdf (7 pages, 364969 bytes).
+5/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2015
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on final_report_cs598ps.pdf (7 pages, 378277 bytes).
 PDF statistics:
- 205 PDF objects out of 1000 (max. 8388607)
- 170 compressed objects within 2 object streams
- 28 named destinations out of 1000 (max. 500000)
+ 211 PDF objects out of 1000 (max. 8388607)
+ 175 compressed objects within 2 object streams
+ 29 named destinations out of 1000 (max. 500000)
  104 words of extra memory for PDF output out of 10000 (max. 10000000)
 
