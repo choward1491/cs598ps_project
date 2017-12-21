@@ -48,7 +48,7 @@
 \DontPrintSemicolon
 
 % define the title that will be used in the report
-\title{Project Title \\ CS 598 PS - ML in Signal Processing}
+\title{Diagnosing Major Depression from fMRI Data \\ CS 598 PS - ML in Signal Processing}
 \author{
 Ryley Higa \\ higa2@illinois.edu
 \and 
@@ -76,7 +76,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    % describe the background of the project
    \section{Project Background}
    \subsection{Dataset Description}
-   The dataset used within this analysis was obtained from OpenfMRI [REFERENCE TO DATA]. It contains data from 19 individuals with Major Depressive Disorder and 20 individuals with no mental illness. fMRI data was then collected for all these individuals while they did a set of tasks related to listening to different clips of audio. The resulting dataset is a time series information of Blood Oxygenation at a dense point cloud of locations within the patients’ brains.
+   The dataset used within this analysis was obtained from OpenfMRI \cite{dataset}. It contains data from 19 individuals with Major Depressive Disorder and 20 individuals with no mental illness. fMRI data was then collected for all these individuals while they did a set of tasks related to listening to different clips of audio. The resulting dataset is a time series information of Blood Oxygenation at a dense point cloud of locations within the patients’ brains.
    
    \subsection{What is fMRI Data?}
    fMRI stands for Functional Magnetic Resonance Imaging. The idea of how this works is that tissue is placed within a strong magnetic field. To help capture a picture of the tissue, radio waves are sent into the tissue. Blood that is deoxygenated will then reflect the waves in a manner that can be processed by sensors and algorithms to generate a fMRI dataset. Figure \ref{fig:brainSlice} shows example visualizations of some subset of the fMRI data used within this problem.
@@ -147,11 +147,15 @@ Sameer Manchanda \\ manchan2@illinois.edu
    \newpage
    \begin{thebibliography}{9}
    	
+   	\bibitem{dataset}
+   	Lepping, R. J., et al. "Neural Processing of Emotional Musical and Nonmusical Stimuli in Depression." \textit{OpenfMRI}, 2016.\\
+   	\texttt{https://openfmri.org/dataset/ds000171/}
+   	
    	\bibitem{salvatore2014machine}
-   	Salvatore, Christian, et al. ``Machine learning on brain MRI data for differential diagnosis of Parkinson's disease and Progressive Supranuclear Palsy." \textit{Journal of Neuroscience Methods} 222 (2014): 230-237.
+   	Salvatore, Christian, et al. "Machine learning on brain MRI data for differential diagnosis of Parkinson's disease and Progressive Supranuclear Palsy." \textit{Journal of Neuroscience Methods} 222 (2014): 230-237.
    	
    	\bibitem{zhang2005diagnosis}
-   	Zhang, Lei, et al. ``Machine learning for clinical diagnosis from functional magnetic resonance imaging." \textit{Computer Vision and Pattern Recognition}, 2005. CVPR 2005. IEEE Computer Society Conference on. Vol. 1. IEEE, 2005.
+   	Zhang, Lei, et al. "Machine learning for clinical diagnosis from functional magnetic resonance imaging." \textit{Computer Vision and Pattern Recognition}, 2005. CVPR 2005. IEEE Computer Society Conference on. Vol. 1. IEEE, 2005.
    \end{thebibliography}
    
    
