@@ -97,7 +97,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    For every measurement session, we had 435,200 measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
    
-   The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. 
+   The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. For both PCA and NMF, we chose the number of components that could account for about 98\% to 99\% of variance in the data, which will also give us a minimized reconstruction loss. We found that around 18-20 components out of the 2560 spatial components we originally started with were sufficient. 
    
    \subsection{Supervised Learning}
    \subsubsection{Gaussian Discriminant Analysis}
@@ -120,7 +120,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    Random Forests build an ensemble of decision trees on a dataset, which take a majority vote to classify a new data point. The trees are built as follows.  First, take $n$ samples with replacement form the original dataset, which has size $n$ and dimension $p$.  Then, train a decision tree on the samples, where the feature split at each node is chosen from a subset of the remaining features (typically a random sample of size $\sqrt{p}$) to maximize information gain.  The bagging and randomized feature splitting keep the trees from being correlated, so a random forest theoretically will overfit less than a decision tree.
    
    \subsubsection{Deep Neural Networks}
-   Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in Figure \ref{fig:dnnConfig}.  It was suggested by Sarraf and Tofighi \textbf{CITE!!!!!} that LeNet-5, a network first designed by LeCunn et Al. \textbf{CITE!!!!!} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86\% accuracy on tasks such as Alzheimer classification. 
+   Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in Figure \ref{fig:dnnConfig}.  It was suggested by Sarraf et Al. \cite{sarraf2016fmri} that LeNet-5, a network first designed by LeCunn et Al. \cite{lecun1998gradient} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86\% accuracy on tasks such as Alzheimer classification. 
    
    In practice, we did make changes to LeNet-5 including the inclusion of batch normalization layers to help the network converge faster, and combining the two 2x2 subsamplng layers into one 4x4 max pooling layer because it gave the network better accuracy on the validation data for our depression classification task. Overall, our network is fairly similar to LeNet-5 with the inclusion of two convolutional layers, for instances of ReLU hidden activation functions, and lastly two fully-connected layers. The loss function that was chosen was the sigmoid loss, which is fairly standard for binary classification tasks.  
    
@@ -152,7 +152,13 @@ Sameer Manchanda \\ manchan2@illinois.edu
    	
    	\bibitem{zhang2005diagnosis}
    	Zhang, Lei, et al. ``Machine learning for clinical diagnosis from functional magnetic resonance imaging." \textit{Computer Vision and Pattern Recognition}, 2005. CVPR 2005. IEEE Computer Society Conference on. Vol. 1. IEEE, 2005.
-   \end{thebibliography}
+   
+   \bibitem{sarraf2016fmri}
+   Sarraf, Saman, et Al. ``Classification  of alzheimer’s disease using fmri data and deep learning convolutional neural networks,`` arXiv:1603.08631 [cs.CV], 2016.
+   	
+   	\bibitem{lecun1998gradient}
+   	LeCun, Yann, et al.``Gradient-based learning applied to document recognition,`` Proceedings of the IEEE, vol. 86, no. 11, pp. 2278–2324, 1998. 
+   	\end{thebibliography}
    
    
 %   \newpage
