@@ -4,10 +4,9 @@
 \BOOKMARK [2][-]{subsection.1.3}{Problem Being Investigated}{section.1}% 4
 \BOOKMARK [1][-]{section.2}{Problem Solution}{}% 5
 \BOOKMARK [2][-]{subsection.2.1}{Unsupervised Learning}{section.2}% 6
-\BOOKMARK [3][-]{subsubsection.2.1.1}{Dimensionality Reduction}{subsection.2.1}% 7
-\BOOKMARK [2][-]{subsection.2.2}{Supervised Learning}{section.2}% 8
-\BOOKMARK [3][-]{subsubsection.2.2.1}{Gaussian Discriminant Analysis}{subsection.2.2}% 9
-\BOOKMARK [3][-]{subsubsection.2.2.2}{Random Forests}{subsection.2.2}% 10
-\BOOKMARK [3][-]{subsubsection.2.2.3}{Deep Neural Networks}{subsection.2.2}% 11
-\BOOKMARK [2][-]{subsection.2.3}{Numerical Results}{section.2}% 12
-\BOOKMARK [1][-]{section*.5}{Appendices}{}% 13
+\BOOKMARK [2][-]{subsection.2.2}{Supervised Learning}{section.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Gaussian Discriminant Analysis}{subsection.2.2}% 8
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Random Forests}{subsection.2.2}% 9
+\BOOKMARK [3][-]{subsubsection.2.2.3}{Deep Neural Networks}{subsection.2.2}% 10
+\BOOKMARK [2][-]{subsection.2.3}{Numerical Results}{section.2}% 11
+\BOOKMARK [1][-]{section*.6}{Appendices}{}% 12
