@@ -48,7 +48,7 @@
 \DontPrintSemicolon
 
 % define the title that will be used in the report
-\title{Project Title \\ CS 598 PS - ML in Signal Processing}
+\title{Diagnosing Major Depression from fMRI Data \\ CS 598 PS - ML in Signal Processing}
 \author{
 Ryley Higa \\ higa2@illinois.edu
 \and 
@@ -65,7 +65,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    % create the title page 
    \maketitle
    \begin{abstract}
-   A set of classifiers were built that could be used to predict if an individual has Major Depression given fMRI data about them performing a set of tasks. To accomplish this task, a dense fMRI dataset was coarsened via a local voxel averaging scheme and then features were discovered using Principal Component Analysis (PCA) and Non-negative Matrix Factorization (NMF). Using the new feature representations, classifiers were constructed using the following approaches: Random Forests, Gaussian Discriminant Analysis (GDA), and a Deep Neural Network (DNN). All of the above classification methods had high testing accuracy. This high accuracy was interesting and appears to stem from the feature representation causing the reduced data to be very separable with respect to their classes.
+   A set of classifiers were built that could be used to predict if an individual has Major Depression given fMRI data about them performing a set of tasks. To accomplish this task, a dense fMRI dataset was coarsened via a local voxel averaging scheme and then features were discovered using Principal Component Analysis (PCA) and Non-negative Matrix Factorization (NMF). Using the new feature representations, classifiers were constructed using the following approaches: Random Forests (RFs), Gaussian Discriminant Analysis (GDA), and a Deep Neural Network (DNN). All of the above classification methods had high testing accuracy. This high accuracy was interesting and appears to stem from the feature representation causing the reduced data to be very separable with respect to their classes.
    \end{abstract}
    \newpage
    
@@ -76,7 +76,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    % describe the background of the project
    \section{Project Background}
    \subsection{Dataset Description}
-   The dataset used within this analysis was obtained from OpenfMRI [REFERENCE TO DATA]. It contains data from 19 individuals with Major Depressive Disorder and 20 individuals with no mental illness. fMRI data was then collected for all these individuals while they did a set of tasks related to listening to different clips of audio. The resulting dataset is a time series information of Blood Oxygenation at a dense point cloud of locations within the patients’ brains.
+   The dataset used within this analysis was obtained from OpenfMRI \cite{dataset}. It contains data from 19 individuals with Major Depressive Disorder and 20 individuals with no mental illness. fMRI data was then collected for all these individuals while they did a set of tasks related to listening to different clips of audio. The resulting dataset is a time series information of Blood Oxygenation at a dense point cloud of locations within the patients’ brains.
    
    \subsection{What is fMRI Data?}
    fMRI stands for Functional Magnetic Resonance Imaging. The idea of how this works is that tissue is placed within a strong magnetic field. To help capture a picture of the tissue, radio waves are sent into the tissue. Blood that is deoxygenated will then reflect the waves in a manner that can be processed by sensors and algorithms to generate a fMRI dataset. Figure \ref{fig:brainSlice} shows example visualizations of some subset of the fMRI data used within this problem.
@@ -95,8 +95,9 @@ Sameer Manchanda \\ manchan2@illinois.edu
    \subsection{Unsupervised Learning}
    The objective of our unsupervised learning tasks was to spatially reduce the dimensions of the fMRI dataset. An initial coarsening of the data was performed using averaging across local voxels of data. The resulting coarsened fMRI dataset consisted of $180$ measurement sessions each session containing a time series of $3$-dimensional points clouds where each point cloud consists of $16$ by $16$ by $10$ spatial dimensions corresponding to the blood oxygen activation at the measured coordinate in the brain.  
    
-   For every measurement session, we had $435200$ measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
+   For every measurement session, we had 435,200 measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
    
+<<<<<<< HEAD
    The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values.  The top components from NMF, visualized in Figure \ref{fig:nmf}, are consistent with evidence from literature on functional connectivity in the human brain.  The literature suggests that local regions specialize in subtasks, but there are correlations with other areas (possibly to coordinate and solve larger problems. \cite{shine2016temporal}.
    
    \begin{figure}[!htb]
@@ -105,6 +106,9 @@ Sameer Manchanda \\ manchan2@illinois.edu
    	\caption{NMF Top Two Components}
    	\label{fig:nmf}
    \end{figure}
+=======
+   The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. For both PCA and NMF, we chose the number of components that could account for about 98\% to 99\% of variance in the data, which will also give us a minimized reconstruction loss. We found that around 18-20 components out of the 2560 spatial components we originally started with were sufficient. 
+>>>>>>> be2e633230d9993ac575389e87c8a721f8894f18
    
    \subsection{Supervised Learning}
    \subsubsection{Gaussian Discriminant Analysis}
@@ -124,10 +128,10 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    
    \subsubsection{Random Forests}
-   Random forests build an ensemble of decision trees on a dataset, which take a majority vote to classify a new data point. The trees are built as follows.  First, take $n$ samples with replacement form the original dataset, which has size $n$ and dimension $p$.  Then, train a decision tree on the samples, where the feature split at each node is chosen from a subset of the remaining features (typically a random sample of size $\sqrt{p}$) to maximize information gain.  The bagging and randomized feature splitting keep the trees from being correlated, so a random forest theoretically will overfit less than a decision tree.
+   Random Forests build an ensemble of decision trees on a dataset, which take a majority vote to classify a new data point. The trees are built as follows.  First, take $n$ samples with replacement form the original dataset, which has size $n$ and dimension $p$.  Then, train a decision tree on the samples, where the feature split at each node is chosen from a subset of the remaining features (typically a random sample of size $\sqrt{p}$) to maximize information gain.  The bagging and randomized feature splitting keep the trees from being correlated, so a random forest theoretically will overfit less than a decision tree.
    
    \subsubsection{Deep Neural Networks}
-   Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in Figure \ref{fig:dnnConfig}.  It was suggested by Sarraf and Tofighi \textbf{CITE!!!!!} that LeNet-5, a network first designed by LeCunn et Al. \textbf{CITE!!!!!} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86\% accuracy on tasks such as Alzheimer classification. 
+   Since deep convolutional neural networks have recently achieved state-of-the-art performance on various pattern recognition and classification tasks, we wanted to compare the performance of CNNs versus random forest classifiers and Gaussian discriminate analysis. The architecture of the CNN is shown in Figure \ref{fig:dnnConfig}.  It was suggested by Sarraf et Al. \cite{sarraf2016fmri} that LeNet-5, a network first designed by LeCunn et Al. \cite{lecun1998gradient} for handwritten digit classification, could be trained with minimal to no changes on fMRI data and still produce 96.86\% accuracy on tasks such as Alzheimer classification. 
    
    In practice, we did make changes to LeNet-5 including the inclusion of batch normalization layers to help the network converge faster, and combining the two 2x2 subsamplng layers into one 4x4 max pooling layer because it gave the network better accuracy on the validation data for our depression classification task. Overall, our network is fairly similar to LeNet-5 with the inclusion of two convolutional layers, for instances of ReLU hidden activation functions, and lastly two fully-connected layers. The loss function that was chosen was the sigmoid loss, which is fairly standard for binary classification tasks.  
    
@@ -140,37 +144,48 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    
    \subsection{Numerical Results}
-   After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as \textbf{Figure 4} shows, their success for a given number of features was dependent on the modeling approach. 
+   After performing the necessary coarsening and dimensionality reduction, a set of models were built for predicting if someone has Major Depressive Disorder based on their fMRI data.  All models performed well but, as Figure \ref{fig:accuracyResults} shows, their success for a given number of features was dependent on the modeling approach. 
    
-   Random Forests proved to not only perform well for the provided NMF features, but was very fast to compute. GDA performed well using PCA feature as the number of PCA features increased and was also very efficient to compute. Now while the Deep Neural Network required more computational complexity to train, it showed great performance as well. As can be seen in Figure 4, GDA required the most number of features to achieve greater than 90\% classification performance while the Random Forests and Deep Neural Network needed only 5 or more features to achieve high accuracy.
+   RF proved to not only perform well for both PCA and NMF features, but the rate of improvement with respect to the number of features was large and the models were fast to compute. GDA performed well using both PCA and NMF features as well but showed a slower rate of improvement than RFs. While the DNN required more computational complexity to train, it showed rapid improvement rates and good testing performance. Interestingly, however, the DNN converges to a classification test accuracy that is actually less than the RF and GDA models for when we use 14+ features. As can be seen in Figure \ref{fig:accuracyResults}, GDA required the most number of features to achieve greater than 90\% classification performance while the RFs and DNN needed only 4 or more features to achieve greater than 90\% accuracy.
+   
+    \begin{figure}[!htb]
+   	\centering
+   	\includegraphics[width=4in]{../plots/fdim_vs_accuracy_all.png}
+   	\caption{Accuracy results}
+   	\label{fig:accuracyResults}
+   \end{figure}
    
    \newpage
    \begin{thebibliography}{9}
-   	\bibitem{labook} 
-   	Gene H. Golub, Charles F. Van Loan. 
-   	\textit{Matrix Computations 4\textsuperscript{th} Edition}. 
-   	The John Hopkins University Press, Baltimore, Maryland, 2013.
    	
-   	\bibitem{fdft} 
-   	Henrik V. Sorensen, C. Sidney Burrus.
-   	\textit{Efficient Computation of the DFT with Only a Subset of Input or Output Points}.
-   	IEEE Transactions on Signal Processing, Volume: 41, Issue: 3, pgs. 1184 - 1200, Mar 1993.
+   	\bibitem{dataset}
+   	Lepping, R. J., et al. "Neural Processing of Emotional Musical and Nonmusical Stimuli in Depression." \textit{OpenfMRI}, 2016.\\
+   	\texttt{https://openfmri.org/dataset/ds000171/}
    	
    	\bibitem{salvatore2014machine}
-   	Salvatore, Christian, et al. ``Machine learning on brain MRI data for differential diagnosis of Parkinson's disease and Progressive Supranuclear Palsy." \textit{Journal of Neuroscience Methods} 222 (2014): 230-237.
+   	Salvatore, Christian, et al. "Machine learning on brain MRI data for differential diagnosis of Parkinson's disease and Progressive Supranuclear Palsy." \textit{Journal of Neuroscience Methods} 222 (2014): 230-237.
    	
    	\bibitem{zhang2005diagnosis}
    	Zhang, Lei, et al. ``Machine learning for clinical diagnosis from functional magnetic resonance imaging." \textit{Computer Vision and Pattern Recognition}, 2005. CVPR 2005. IEEE Computer Society Conference on. Vol. 1. IEEE, 2005.
+<<<<<<< HEAD
    	
    	\bibitem{shine2016temporal}
    	Shine, James M., Oluwasanmi Koyejo, and Russell A. Poldrack. "Temporal metastates are associated with differential patterns of time-resolved connectivity, network topology, and attention." Proceedings of the National Academy of Sciences (2016): 201604898.
    \end{thebibliography}
+=======
+>>>>>>> be2e633230d9993ac575389e87c8a721f8894f18
+   
+   \bibitem{sarraf2016fmri}
+   Sarraf, Saman, et Al. ``Classification  of alzheimer’s disease using fmri data and deep learning convolutional neural networks,`` arXiv:1603.08631 [cs.CV], 2016.
+   	
+   	\bibitem{lecun1998gradient}
+   	LeCun, Yann, et al.``Gradient-based learning applied to document recognition,`` Proceedings of the IEEE, vol. 86, no. 11, pp. 2278–2324, 1998. 
+   	\end{thebibliography}
    
    
-   \newpage
-\begin{appendices}
-
-\end{appendices}   
+%   \newpage
+%\begin{appendices}
+%\end{appendices}   
    
    
    

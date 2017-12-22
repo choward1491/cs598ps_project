@@ -220,6 +220,11 @@ def main():
                 val_cost += cost.data.numpy()[0]
 
         val_accuracies.append(val_accuracy / (dataset.lenval() + 1))
+    val_accuracies = np.array(val_accuracies)
+    if args.transform == 'nmf':
+        np.save('../data/dfnmf.npy', val_accuracies)
+    else:
+        np.save('../data/dfpca.npy', val_accuracies)
     plt.plot(val_accuracies)
     plt.xlabel('Number of Features')
     plt.ylabel('Testing Accuracies')
