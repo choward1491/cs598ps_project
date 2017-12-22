@@ -97,8 +97,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    
    For every measurement session, we had 435,200 measured samples in total which we wanted to reduce so that the sessions can be easily classified as belonging to patients in the control group or to patients in the major depressive disorder group. We decided that only reducing the dataset in the spatial dimensions was the best method to reduce the overall dimensions of our dataset because we observed that sequential variance was more important than spatial variance for fMRI classification. 
    
-<<<<<<< HEAD
-   The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values.  The top components from NMF, visualized in Figure \ref{fig:nmf}, are consistent with evidence from literature on functional connectivity in the human brain.  The literature suggests that local regions specialize in subtasks, but there are correlations with other areas (possibly to coordinate and solve larger problems. \cite{shine2016temporal}.
+   The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. For both PCA and NMF, we chose the number of components that could account for about 98\% to 99\% of variance in the data, which will also give us a minimized reconstruction loss. We found that around 18-20 components out of the 2560 spatial components we originally started with were sufficient.   The top components from NMF, visualized in Figure \ref{fig:nmf}, are consistent with evidence from literature on functional connectivity in the human brain.  The literature suggests that local regions specialize in subtasks, but there are correlations with other areas (possibly to coordinate and solve larger problems. \cite{shine2016temporal}.
    
    \begin{figure}[!htb]
    	\centering
@@ -106,10 +105,7 @@ Sameer Manchanda \\ manchan2@illinois.edu
    	\caption{NMF Top Two Components}
    	\label{fig:nmf}
    \end{figure}
-=======
-   The two methods we used to reduce the dimensions were PCA and NMF. PCA was a good baseline dimensionality reduction technique while NMF was a natural choice for dimensionality reduction since the blood oxygen levels were all non-negative values. For both PCA and NMF, we chose the number of components that could account for about 98\% to 99\% of variance in the data, which will also give us a minimized reconstruction loss. We found that around 18-20 components out of the 2560 spatial components we originally started with were sufficient. 
->>>>>>> be2e633230d9993ac575389e87c8a721f8894f18
-   
+
    \subsection{Supervised Learning}
    \subsubsection{Gaussian Discriminant Analysis}
    As a fairly straight forward model for classification, Gaussian discriminant functions with full covariance estimates were used. The idea is to perform a Maximum a Posteriori (MAP) estimate of which class $\omega^*$, out of a set of classes $\lbrace \omega_k \rbrace$, is best representative given some input $x$. This can be expressed as:
